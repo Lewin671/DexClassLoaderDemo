@@ -9,6 +9,7 @@ import android.util.Log;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.dexclassdemo.liuguangli.R;
 
@@ -16,8 +17,7 @@ import java.io.File;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+
 
 
 import dalvik.system.DexClassLoader;
@@ -25,6 +25,7 @@ import dalvik.system.DexClassLoader;
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     private static final String FILE_NAME = "bundle-debug.apk";
+//    private static final String FILE_NAME = "disklrucache-2.0.2.jar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         File dir = new File(this.getFilesDir(), DIR_NAME);
         File apkFile = new File(dir, FILE_NAME);
         if (apkFile.exists()) {
-            return apkFile.getAbsolutePath();
+            apkFile.delete();
         }
 
         // 确保 dir 目录存在
@@ -62,37 +63,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadApk(String apkPath) {
-
-
         Log.v("loadDexClasses", "Dex Preparing to loadDexClasses!");
 
         File dexOpt = this.getDir("dexOpt", MODE_PRIVATE);
-        final DexClassLoader classloader = new DexClassLoader(
-                apkPath,
-                dexOpt.getAbsolutePath(),
-                null,
-                this.getClassLoader());
+        final DexClassLoader classloader = new DexClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
 
-        Log.v("loadDexClasses", "Searching for class : "
-                + "com.registry.Registry");
+        Log.v("loadDexClasses", "Searching for class : " + "com.registry.Registry");
         try {
-            Class<?> classToLoad = (Class<?>) classloader.loadClass("com.dexclassdemo.liuguangli.apkbeloaded.ClassToBeLoad");
-            Object instance = classToLoad.newInstance();
-            Method method = classToLoad.getMethod("method");
-            method.invoke(instance);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            Class<?> DiskLruCache = (Class<?>) classloader.loadClass("com.jakewharton.disklrucache.DiskLruCache");
+            Toast.makeText(this, "DiskLruCache 成功", Toast.LENGTH_SHORT).show();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+            Toast.makeText(this, "DiskLruCache 失败", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     @Override
