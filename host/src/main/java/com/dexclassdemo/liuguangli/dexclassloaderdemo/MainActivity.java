@@ -24,8 +24,8 @@ import dalvik.system.DexClassLoader;
 
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
-    private static final String FILE_NAME = "bundle-debug.apk";
-//    private static final String FILE_NAME = "disklrucache-2.0.2.jar";
+//    private static final String FILE_NAME = "bundle-debug.apk";
+    private static final String FILE_NAME = "disklrucache-2.0.2-android.jar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
