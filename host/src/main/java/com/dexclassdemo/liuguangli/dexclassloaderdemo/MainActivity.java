@@ -9,6 +9,7 @@ import android.util.Log;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.dexclassdemo.liuguangli.R;
@@ -19,12 +20,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 
-
 import dalvik.system.DexClassLoader;
 
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
-//    private static final String FILE_NAME = "bundle-debug.apk";
+    //    private static final String FILE_NAME = "bundle-debug.apk";
     private static final String FILE_NAME = "disklrucache-2.0.2-android.jar";
 
     @Override
@@ -32,8 +32,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
-            String apkPath = getApkFilePath();
-            loadApk(apkPath);
+            findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String apkPath = null;
+                    try {
+                        apkPath = getApkFilePath();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    loadApk(apkPath);
+                }
+            });
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -71,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         Log.v("loadDexClasses", "Searching for class : " + "com.registry.Registry");
         try {
             Class<?> DiskLruCache = (Class<?>) classloader.loadClass("com.jakewharton.disklrucache.DiskLruCache");
-            Toast.makeText(this, "DiskLruCache 成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "加载 DiskLruCache 成功", Toast.LENGTH_SHORT).show();
         } catch (ClassNotFoundException e) {
-            Toast.makeText(this, "DiskLruCache 失败", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "加载 DiskLruCache 失败", Toast.LENGTH_SHORT).show();
         }
     }
 
