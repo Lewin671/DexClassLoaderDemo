@@ -3,6 +3,7 @@ package com.dexclassdemo.liuguangli.dexclassloaderdemo;
 
 import android.os.Bundle;
 
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
@@ -25,7 +26,7 @@ import dalvik.system.DexClassLoader;
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
-    private static final String FILE_NAME = "disklrucache-2.0.2-android.jar";
+    private static final String FILE_NAME = "test.apk";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +75,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadApk(String apkPath) {
         Log.v("loadDexClasses", "Dex Preparing to loadDexClasses!");
-
+        long start = SystemClock.uptimeMillis();
         File dexOpt = this.getDir("dexOpt", MODE_PRIVATE);
         final DexClassLoader classloader = new DexClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
-
-        Log.v("loadDexClasses", "Searching for class : " + "com.registry.Registry");
+        boolean success = false;
         try {
-            Class<?> DiskLruCache = (Class<?>) classloader.loadClass("com.jakewharton.disklrucache.DiskLruCache");
-            Toast.makeText(this, "加载 DiskLruCache 成功", Toast.LENGTH_SHORT).show();
-        } catch (ClassNotFoundException e) {
-            Toast.makeText(this, "加载 DiskLruCache 失败", Toast.LENGTH_SHORT).show();
+            Class<?> DiskLruCache = (Class<?>) classloader.loadClass("org.chromium.android_webview.AwContents");
+            success = true;
+        } catch (ClassNotFoundException ignored) {
+
         }
+
+        long cost = SystemClock.uptimeMillis() - start;
+        Toast.makeText(this, "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms", Toast.LENGTH_SHORT).show();
+        Log.v("loadDexClasses", "Searching for class costs: " + cost + "ms");
+
     }
 
     @Override
