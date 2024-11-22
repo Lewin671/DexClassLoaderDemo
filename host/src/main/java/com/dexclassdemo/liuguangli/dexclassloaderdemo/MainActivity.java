@@ -14,11 +14,15 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.dexclassdemo.liuguangli.R;
+import com.tencent.tinker.loader.TinkerDexOptimizer;
+import com.tencent.tinker.loader.app.TinkerApplication;
 
 import java.io.File;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 import dalvik.system.DexClassLoader;
@@ -26,7 +30,7 @@ import dalvik.system.DexClassLoader;
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
-    private static final String FILE_NAME = "test.apk";
+    private static final String FILE_NAME = "core.jar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,34 @@ public class MainActivity extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                     loadApk(apkPath);
+
+                    String finalApkPath = apkPath;
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            Collection<File> dexFiles = new ArrayList<>();
+                            dexFiles.add(new File(finalApkPath));
+                            TinkerDexOptimizer.optimizeAll(MainActivity.this, dexFiles, null, false, false, new TinkerDexOptimizer.ResultCallback() {
+
+                                @Override
+                                public void onStart(File dexFile, File optimizedDir) {
+                                    Log.v("loadDexClasses", "onStart " + dexFile.getAbsolutePath());
+
+                                }
+
+                                @Override
+                                public void onSuccess(File dexFile, File optimizedDir, File optimizedFile) {
+                                    Log.v("loadDexClasses", "onSuccess " + dexFile.getAbsolutePath());
+                                }
+
+                                @Override
+                                public void onFailed(File dexFile, File optimizedDir, Throwable thr) {
+                                    Log.v("loadDexClasses", "onFailed " + dexFile.getAbsolutePath() +" " + thr.getLocalizedMessage());
+                                }
+                            });
+                        }
+                    }.start();
                 }
             });
         } catch (Exception e) {
