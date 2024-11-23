@@ -11,6 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DexOptimizerN implements IDexOptimizer {
+    private static @NonNull ProcessBuilder getProcessBuilder(@NonNull File dexFile, File optimizedDexFile, String isa) {
+        final List<String> commandAndParams = new ArrayList<>();
+        commandAndParams.add("dex2oat");
+        // for 7.1.1, duplicate class fix
+        if (Build.VERSION.SDK_INT >= 24) {
+            commandAndParams.add("--runtime-arg");
+            commandAndParams.add("-classpath");
+            commandAndParams.add("--runtime-arg");
+            commandAndParams.add("&");
+        }
+        commandAndParams.add("--dex-file=" + dexFile.getAbsolutePath());
+        commandAndParams.add("--oat-file=" + optimizedDexFile.getAbsolutePath());
+        commandAndParams.add("--instruction-set=" + isa);
+        commandAndParams.add("--compiler-filter=speed-profile");
+        return new ProcessBuilder(commandAndParams);
+    }
+
     @Override
     public void optimize(@NonNull Context context, @NonNull File dexFile, @NonNull DexOptimizeCallback callback) {
         File optimizedDexFile = DexUtils.getOptimizedDexFile(dexFile);
@@ -28,24 +45,7 @@ public class DexOptimizerN implements IDexOptimizer {
             }
             callback.onSuccess(dexFile);
         } catch (Exception e) {
-            callback.onFailed(dexFile, e.getMessage());
+            callback.onFailed(dexFile, "cmd exe failed: " + e.getMessage());
         }
-    }
-
-    private static @NonNull ProcessBuilder getProcessBuilder(@NonNull File dexFile, File optimizedDexFile, String isa) {
-        final List<String> commandAndParams = new ArrayList<>();
-        commandAndParams.add("dex2oat");
-        // for 7.1.1, duplicate class fix
-        if (Build.VERSION.SDK_INT >= 24) {
-            commandAndParams.add("--runtime-arg");
-            commandAndParams.add("-classpath");
-            commandAndParams.add("--runtime-arg");
-            commandAndParams.add("&");
-        }
-        commandAndParams.add("--dex-file=" + dexFile.getAbsolutePath());
-        commandAndParams.add("--oat-file=" + optimizedDexFile.getAbsolutePath());
-        commandAndParams.add("--instruction-set=" + isa);
-        commandAndParams.add("--compiler-filter=speed-profile");
-        return new ProcessBuilder(commandAndParams);
     }
 }

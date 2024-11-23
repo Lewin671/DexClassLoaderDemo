@@ -4,7 +4,7 @@ android {
 
     defaultConfig {
         namespace 'com.dexclassdemo.liuguangli'
-        applicationId "com.dexclassdemo.liuguangli.dexclassloaderdemo"
+        applicationId "com.dexclassdemo.liuguangli"
         minSdkVersion 21
         targetSdkVersion 34
         compileSdkVersion 34

@@ -2,14 +2,11 @@ package com.dexclassdemo.liuguangli.dexclassloaderdemo;
 
 
 import android.os.Bundle;
-
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-
 import android.util.Log;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,12 +18,9 @@ import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.DexOptimizer;
 import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.utils.DexUtils;
 import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.utils.LogUtils;
 
-
 import java.io.File;
-
 import java.io.FileOutputStream;
 import java.io.InputStream;
-
 
 import dalvik.system.DexClassLoader;
 
@@ -34,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
     private static final String FILE_NAME = "core.jar";
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadApk(String apkPath) {
         Log.v("loadDexClasses", "Dex Preparing to loadDexClasses!");
+        File apkFile = new File(apkPath);
+        apkFile.setReadOnly();
         long start = SystemClock.uptimeMillis();
         File dexOpt = this.getDir("dexOpt", MODE_PRIVATE);
         final DexClassLoader classloader = new DexClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
@@ -116,10 +113,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         long cost = SystemClock.uptimeMillis() - start;
-        File optimizedDexFile = DexUtils.getOptimizedDexFile(new File(apkPath));
+        File optimizedDexFile = DexUtils.getOptimizedDexFile(apkFile);
         boolean exists = optimizedDexFile != null && optimizedDexFile.exists();
-        Toast.makeText(this, "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms," + "optFileExists: " + exists, Toast.LENGTH_SHORT).show();
-        Log.v("loadDexClasses", "Searching for class costs: " + cost + "ms");
+        long length = optimizedDexFile == null ? 0 : optimizedDexFile.length();
+        String msg = "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms," + "valid: " + exists + ", length: " + length;
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Log.v(TAG, msg);
     }
 
     @Override
