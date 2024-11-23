@@ -4,6 +4,8 @@ package com.dexclassdemo.liuguangli.dexclassloaderdemo;
 import android.os.Bundle;
 
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import android.util.Log;
@@ -14,15 +16,16 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.dexclassdemo.liuguangli.R;
-import com.tencent.tinker.loader.TinkerDexOptimizer;
-import com.tencent.tinker.loader.app.TinkerApplication;
+import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.DexOptimizeCallback;
+import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.DexOptimizer;
+import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.utils.DexUtils;
+import com.dexclassdemo.liuguangli.dexclassloaderdemo.dex.utils.LogUtils;
+
 
 import java.io.File;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 
 
 import dalvik.system.DexClassLoader;
@@ -53,26 +56,20 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             super.run();
-                            Collection<File> dexFiles = new ArrayList<>();
-                            dexFiles.add(new File(finalApkPath));
-                            TinkerDexOptimizer.optimizeAll(MainActivity.this, dexFiles, null, false, false, new TinkerDexOptimizer.ResultCallback() {
-
+                            DexOptimizer.getInstance().optimize(MainActivity.this, new File(finalApkPath), new DexOptimizeCallback() {
                                 @Override
-                                public void onStart(File dexFile, File optimizedDir) {
-                                    Log.v("loadDexClasses", "onStart " + dexFile.getAbsolutePath());
-
+                                public void onFailed(@NonNull File dexFile, @Nullable String errorMessage) {
+                                    super.onFailed(dexFile, errorMessage);
+                                    LogUtils.e("MainActivity", "onFailed: " + errorMessage);
                                 }
 
                                 @Override
-                                public void onSuccess(File dexFile, File optimizedDir, File optimizedFile) {
-                                    Log.v("loadDexClasses", "onSuccess " + dexFile.getAbsolutePath());
-                                }
-
-                                @Override
-                                public void onFailed(File dexFile, File optimizedDir, Throwable thr) {
-                                    Log.v("loadDexClasses", "onFailed " + dexFile.getAbsolutePath() +" " + thr.getLocalizedMessage());
+                                public void onSuccess(@NonNull File dexFile) {
+                                    super.onSuccess(dexFile);
+                                    LogUtils.e("MainActivity", "dexopt onSuccess: " + dexFile.getAbsolutePath());
                                 }
                             });
+
                         }
                     }.start();
                 }
@@ -119,9 +116,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         long cost = SystemClock.uptimeMillis() - start;
-        Toast.makeText(this, "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms", Toast.LENGTH_SHORT).show();
+        File optimizedDexFile = DexUtils.getOptimizedDexFile(new File(apkPath));
+        boolean exists = optimizedDexFile != null && optimizedDexFile.exists();
+        Toast.makeText(this, "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms," + "optFileExists: " + exists, Toast.LENGTH_SHORT).show();
         Log.v("loadDexClasses", "Searching for class costs: " + cost + "ms");
-
     }
 
     @Override

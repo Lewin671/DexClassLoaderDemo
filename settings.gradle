@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 
-include ':host', ':bundle'
+include ':host'
