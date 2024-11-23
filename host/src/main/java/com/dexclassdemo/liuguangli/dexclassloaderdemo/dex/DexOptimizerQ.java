@@ -144,7 +144,7 @@ public class DexOptimizerQ implements IDexOptimizer {
 
     @Override
     public void optimize(@NonNull Context context, @NonNull File dexFile, @NonNull DexOptimizeCallback callback) {
-        boolean success = registerDexModule(context, dexFile);
+        boolean success = true; //registerDexModule(context, dexFile);
         if (success) {
             if (performDexOpt(context)) {
                 callback.onSuccess(dexFile);
