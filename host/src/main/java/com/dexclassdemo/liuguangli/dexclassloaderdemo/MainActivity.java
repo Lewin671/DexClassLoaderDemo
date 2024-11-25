@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import dalvik.system.DelegateLastClassLoader;
 import dalvik.system.DexClassLoader;
 
 public class MainActivity extends AppCompatActivity {
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         apkFile.setReadOnly();
         long start = SystemClock.uptimeMillis();
         File dexOpt = this.getDir("dexOpt", MODE_PRIVATE);
-        final DexClassLoader classloader = new DexClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
+        final DexClassLoader classloader = new CustomClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
         boolean success = false;
         try {
             Class<?> DiskLruCache = (Class<?>) classloader.loadClass("org.chromium.android_webview.AwContents");

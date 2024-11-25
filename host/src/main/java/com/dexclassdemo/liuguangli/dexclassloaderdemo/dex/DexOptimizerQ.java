@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.util.Objects;
 
+import dalvik.system.DexClassLoader;
+
 public class DexOptimizerQ implements IDexOptimizer {
     private static final String TAG = "DexOptimizerQ";
     /**
@@ -145,6 +147,7 @@ public class DexOptimizerQ implements IDexOptimizer {
     @Override
     public void optimize(@NonNull Context context, @NonNull File dexFile, @NonNull DexOptimizeCallback callback) {
         boolean success = true; //registerDexModule(context, dexFile);
+        new DexClassLoader(dexFile.getAbsolutePath(), null, null, context.getClassLoader());
         if (success) {
             if (performDexOpt(context)) {
                 callback.onSuccess(dexFile);
