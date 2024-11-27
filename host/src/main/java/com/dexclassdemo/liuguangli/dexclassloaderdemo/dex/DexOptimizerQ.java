@@ -111,7 +111,7 @@ public class DexOptimizerQ implements IDexOptimizer {
 
     private static boolean reconcile(@NonNull Context context) {
         // cmd package reconcile-secondary-dex-files
-        String[] args = new String[]{"reconcile", context.getPackageName()};
+        String[] args = new String[]{"reconcile-secondary-dex-files", context.getPackageName()};
         return executeShellCommand(args);
     }
 

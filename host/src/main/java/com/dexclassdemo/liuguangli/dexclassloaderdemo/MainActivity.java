@@ -29,7 +29,25 @@ public class MainActivity extends AppCompatActivity {
     //    private static final String FILE_NAME = "bundle-debug.apk";
     private static final String FILE_NAME = "core.jar";
     private static final String TAG = "MainActivity";
-    private static final int version = 4;
+    private static final int version = 9;
+
+    private static void clear(File dir) {
+        if (dir == null || !dir.exists()) {
+            return;
+        }
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                clear(file);
+                file.delete();
+            } else {
+                file.delete();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +95,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String getApkFilePath() throws Exception {
+        clear(this.getFilesDir());
+
         File dir = new File(this.getFilesDir(), DIR_NAME + version);
         File apkFile = new File(dir, FILE_NAME);
         if (apkFile.exists()) {
             apkFile.delete();
         }
 
-        // 确保 dir 目录存在
         dir.mkdirs();
 
         try (InputStream inputStream = this.getAssets().open(DIR_NAME + "/" + FILE_NAME)) {
