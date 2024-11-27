@@ -27,11 +27,11 @@ import dalvik.system.DelegateLastClassLoader;
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
-    private static final String FILE_NAME = "core.jar";
+    private static final String FILE_NAME = "classes.dex";
     private static final String TAG = "MainActivity";
-    private static final int version = 9;
+    private static final int version = 12;
 
-    private static void clear(File dir) {
+    private static void clear(File dir, File exceptDir) {
         if (dir == null || !dir.exists()) {
             return;
         }
@@ -40,8 +40,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         for (File file : files) {
+            if (file == null) continue;
+            // 判断 file 是否在 except 目录里面
+            boolean shouldSkip = exceptDir != null && file.getAbsolutePath().contains(exceptDir.getAbsolutePath());
+            if (shouldSkip) {
+                continue;
+            }
             if (file.isDirectory()) {
-                clear(file);
+                clear(file, exceptDir);
                 file.delete();
             } else {
                 file.delete();
@@ -95,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String getApkFilePath() throws Exception {
-        clear(this.getFilesDir());
-
         File dir = new File(this.getFilesDir(), DIR_NAME + version);
+        clear(this.getFilesDir(), dir);
+
         File apkFile = new File(dir, FILE_NAME);
         if (apkFile.exists()) {
             apkFile.delete();
