@@ -23,13 +23,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import dalvik.system.DelegateLastClassLoader;
-import dalvik.system.DexClassLoader;
 
 public class MainActivity extends AppCompatActivity {
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
     private static final String FILE_NAME = "core.jar";
     private static final String TAG = "MainActivity";
+    private static final int version = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String getApkFilePath() throws Exception {
-        File dir = new File(this.getFilesDir(), DIR_NAME);
+        File dir = new File(this.getFilesDir(), DIR_NAME + version);
         File apkFile = new File(dir, FILE_NAME);
         if (apkFile.exists()) {
             apkFile.delete();
@@ -104,7 +104,15 @@ public class MainActivity extends AppCompatActivity {
         apkFile.setReadOnly();
         long start = SystemClock.uptimeMillis();
         File dexOpt = this.getDir("dexOpt", MODE_PRIVATE);
-        final DexClassLoader classloader = new CustomClassLoader(apkPath, dexOpt.getAbsolutePath(), null, this.getClassLoader());
+        final ClassLoader classloader;
+        long beforeNewClassLoader = SystemClock.uptimeMillis();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
+            classloader = new DelegateLastClassLoader(apkPath, this.getClassLoader());
+        } else {
+            LogUtils.e(TAG, "loadApk not support");
+            return;
+        }
+        long afterNewClassLoader = SystemClock.uptimeMillis();
         boolean success = false;
         try {
             Class<?> DiskLruCache = (Class<?>) classloader.loadClass("org.chromium.android_webview.AwContents");
@@ -112,12 +120,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (ClassNotFoundException ignored) {
 
         }
+        long afterLoadClass = SystemClock.uptimeMillis();
 
-        long cost = SystemClock.uptimeMillis() - start;
+        long classLoaderCost = afterNewClassLoader - beforeNewClassLoader;
+        long loadClassCost = afterLoadClass - afterNewClassLoader;
         File optimizedDexFile = DexUtils.getOptimizedDexFile(apkFile);
         boolean exists = optimizedDexFile != null && optimizedDexFile.exists();
         long length = optimizedDexFile == null ? 0 : optimizedDexFile.length();
-        String msg = "类加载" + (success ? "成功" : " 失败") + ", 耗时: " + cost + "ms," + "valid: " + exists + ", length: " + length;
+        String msg = "类加载" + (success ? "成功" : " 失败") + ", classLoaderCost: " + (classLoaderCost) + "ms, loadClassCost: " + loadClassCost + "ms," + "valid: " + exists + ", length: " + length;
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         Log.v(TAG, msg);
     }

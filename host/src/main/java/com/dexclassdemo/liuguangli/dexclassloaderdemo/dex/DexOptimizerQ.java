@@ -16,8 +16,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.util.Objects;
 
-import dalvik.system.DexClassLoader;
-
 public class DexOptimizerQ implements IDexOptimizer {
     private static final String TAG = "DexOptimizerQ";
     /**
@@ -107,7 +105,13 @@ public class DexOptimizerQ implements IDexOptimizer {
     }
 
     private static boolean performDexOpt(@NonNull Context context) {
-        String[] args = new String[]{"compile", "-f", "--secondary-dex", "-m", "speed-profile", context.getPackageName()};
+        String[] args = new String[]{"compile", "-f", "--secondary-dex", "-m", "speed", context.getPackageName()};
+        return executeShellCommand(args);
+    }
+
+    private static boolean reconcile(@NonNull Context context) {
+        // cmd package reconcile-secondary-dex-files
+        String[] args = new String[]{"reconcile", context.getPackageName()};
         return executeShellCommand(args);
     }
 
@@ -146,8 +150,7 @@ public class DexOptimizerQ implements IDexOptimizer {
 
     @Override
     public void optimize(@NonNull Context context, @NonNull File dexFile, @NonNull DexOptimizeCallback callback) {
-        boolean success = true; //registerDexModule(context, dexFile);
-        new DexClassLoader(dexFile.getAbsolutePath(), null, null, context.getClassLoader());
+        boolean success = reconcile(context); //registerDexModule(context, dexFile);
         if (success) {
             if (performDexOpt(context)) {
                 callback.onSuccess(dexFile);
