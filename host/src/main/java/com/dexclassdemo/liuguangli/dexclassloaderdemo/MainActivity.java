@@ -25,11 +25,15 @@ import java.io.InputStream;
 import dalvik.system.DelegateLastClassLoader;
 
 public class MainActivity extends AppCompatActivity {
+    // 加载本地库
+    static {
+        System.loadLibrary("dextest");
+    }
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
-    private static final String FILE_NAME = "classes.dex";
+    private static final String FILE_NAME = "core.jar";
     private static final String TAG = "MainActivity";
-    private static final int version = 12;
+    private static final int version = 1;
 
     private static void clear(File dir, File exceptDir) {
         if (dir == null || !dir.exists()) {
@@ -57,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e(TAG, stringFromJNI());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         try {
@@ -124,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadApk(String apkPath) {
+        stringFromJNI();
         Log.v("loadDexClasses", "Dex Preparing to loadDexClasses!");
         File apkFile = new File(apkPath);
         apkFile.setReadOnly();
@@ -178,4 +184,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public native String stringFromJNI();
 }
