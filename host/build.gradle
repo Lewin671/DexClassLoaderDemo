@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
 
@@ -23,7 +24,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -34,6 +35,9 @@ android {
             path file('src/main/cpp/CMakeLists.txt')
             version '3.25.3'
         }
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 
 }

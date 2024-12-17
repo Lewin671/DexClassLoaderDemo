@@ -29,9 +29,10 @@ public class MainActivity extends AppCompatActivity {
     static {
         System.loadLibrary("dextest");
     }
+
     private static final String DIR_NAME = "plugins";
     //    private static final String FILE_NAME = "bundle-debug.apk";
-    private static final String FILE_NAME = "core.jar";
+    private static final String FILE_NAME = "classes.dex";
     private static final String TAG = "MainActivity";
     private static final int version = 1;
 
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Test.finishTest();
                     String apkPath = null;
                     try {
                         apkPath = getApkFilePath();

@@ -15,3 +15,5 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-verbose
+-whyareyoukeeping class com.dexclassdemo.liuguangli.dexclassloaderdemo.Test
