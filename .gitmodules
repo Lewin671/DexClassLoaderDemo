@@ -1,9 +1,9 @@
 [submodule "host/src/main/cpp/art"]
 	path = host/src/main/cpp/art
 	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/art
-[submodule "native"]
-	path = native
-	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/frameworks/native
 [submodule "host/src/main/cpp/native"]
 	path = host/src/main/cpp/native
 	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/frameworks/native
+[submodule "host/src/main/cpp/base"]
+	path = host/src/main/cpp/base
+	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/frameworks/base
