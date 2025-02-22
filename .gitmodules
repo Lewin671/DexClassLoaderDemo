@@ -7,3 +7,6 @@
 [submodule "host/src/main/cpp/base"]
 	path = host/src/main/cpp/base
 	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/frameworks/base
+[submodule "host/src/main/cpp/bionic"]
+	path = host/src/main/cpp/bionic
+	url = https://mirrors.tuna.tsinghua.edu.cn/git/AOSP/platform/bionic
